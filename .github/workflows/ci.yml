@@ -106,7 +106,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-14, ubuntu-24.04, windows-2022]
+        os: [ubuntu-24.04, windows-2022]
 
         type: [shared, static]
 

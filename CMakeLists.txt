@@ -22,12 +22,12 @@ add_library(
 )
 add_library(vstream::vstream ALIAS vstream_vstream)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(curl REQUIRED IMPORTED_TARGET libcurl)
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(curl REQUIRED IMPORTED_TARGET libcurl)
 
 target_link_libraries(
     vstream_vstream PRIVATE
-    PkgConfig::curl
+    /home/ohmypc/curl/build/lib/libcurl.so
     m
 )
 
