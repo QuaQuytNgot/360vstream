@@ -21,6 +21,13 @@ cmake -S . -B build
 cmake --build build --config Release
 ```
 
+## Build example
+
+```sh
+cmake -S . -B build -D BUILD_EXAMPLES=TRUE
+cmake --build build
+```
+
 ### Building with MSVC
 
 Note that MSVC by default is not standards compliant and you need to pass some
