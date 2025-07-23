@@ -2,15 +2,17 @@
 #define DEFINE_H
 
 #include "define.h"
-#include <stdint.h>
 #include <math.h>
+#include <stdint.h>
 
-#define BW          long int // bytes/s
-#define BYTE        unsigned int
-#define RET         unsigned int
-#define RET_FAIL    0
-#define RET_SUCCESS 1
-#define BW_DEFAULT  (-1)
+#define BW                long int // bytes/s
+#define BYTE              unsigned int
+#define RET               unsigned int
+#define RET_FAIL          0
+#define RET_SUCCESS       1
+#define BW_DEFAULT        (-1)
+#define HISTORY_SIZE      100
+#define PREDICTION_WINDOW 10
 
 typedef uint64_t bw_t;
 typedef uint64_t count_t;
@@ -71,6 +73,10 @@ typedef enum
 
 typedef unsigned long long COUNT;
 
-#define NULL_POINTER            ((void *)0)
+#define NULL_POINTER ((void *)0)
 
+float yaw_trace[]   = {0.0f, 10.0f, 15.0f};
+float pitch_trace[] = {0.0f, 10.0f, 15.0f};
+// define more yaw trace and pitch trace
+int   size_trace    = sizeof(yaw_trace) / sizeof(yaw_trace[0]);
 #endif

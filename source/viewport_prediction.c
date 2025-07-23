@@ -32,6 +32,7 @@ RET viewport_prediction_init(viewport_prediction_t *vpes,
     break;
 
   default:
+    return RET_FAIL;
     break;
   }
   return RET_SUCCESS;
@@ -116,12 +117,96 @@ void adjust_yaw_for_wrapping(float *yaw_values, int n)
   }
 }
 
-RET tile_selection_vpes_legr(viewport_prediction_t *vpes,
-                             float                 *yaw,
-                             float                 *pitch)
+void add_viewport_sample(viewport_prediction_t *vpes,
+                         float                  yaw,
+                         float                  pitch)
 {
-  if (yaw == NULL_POINTER || pitch == NULL_POINTER)
+  if (vpes == NULL_POINTER || vpes->yaw_history == NULL_POINTER ||
+      vpes->pitch_history == NULL_POINTER ||
+      vpes->timestamps == NULL_POINTER)
+  {
+    return;
+  }
+
+  vpes->yaw_history[vpes->current_index]   = yaw;
+  vpes->pitch_history[vpes->current_index] = pitch;
+  vpes->timestamps[vpes->current_index]    = vpes->next_timestamp++;
+
+  vpes->current_index =
+      (vpes->current_index + 1) % vpes->history_size;
+  if (vpes->sample_count < vpes->history_size)
+  {
+    vpes->sample_count++;
+  }
+}
+
+RET vpes_legr(viewport_prediction_t *vpes, float *yaw, float *pitch)
+{
+  if (vpes == NULL_POINTER || yaw == NULL_POINTER ||
+      pitch == NULL_POINTER)
   {
     return RET_FAIL;
   }
+
+  float *yaw_work =
+      (float *)malloc(sizeof(float) * vpes->sample_count);
+  float *pitch_work =
+      (float *)malloc(sizeof(float) * vpes->sample_count);
+  int *time_work = (int *)malloc(sizeof(int) * vpes->sample_count);
+
+  if (yaw_work == NULL_POINTER || pitch_work == NULL_POINTER ||
+      time_work == NULL_POINTER)
+  {
+    free(yaw_work);
+    free(pitch_work);
+    free(time_work);
+    return RET_FAIL;
+  }
+
+  int samples_to_use = vpes->sample_count;
+  int start_idx =
+      (vpes->current_index - samples_to_use + vpes->history_size) %
+      vpes->history_size;
+
+  for (int i = 0; i < samples_to_use; i++)
+  {
+    int idx       = (start_idx + i) % vpes->history_size;
+    yaw_work[i]   = vpes->yaw_history[idx];
+    pitch_work[i] = vpes->pitch_history[idx];
+    time_work[i]  = vpes->timestamps[idx];
+  }
+
+  adjust_yaw_for_wrapping(yaw_work, samples_to_use);
+
+  float yaw_slope, yaw_intercept;
+  float pitch_slope, pitch_intercept;
+
+  RET   yaw_result   = calculate_linear_regression(yaw_work,
+                                               time_work,
+                                               samples_to_use,
+                                               &yaw_slope,
+                                               &yaw_intercept);
+  RET   pitch_result = calculate_linear_regression(pitch_work,
+                                                 time_work,
+                                                 samples_to_use,
+                                                 &pitch_slope,
+                                                 &pitch_intercept);
+
+  free(yaw_work);
+  free(pitch_work);
+  free(time_work);
+
+  if (yaw_result != RET_SUCCESS || pitch_result != RET_SUCCESS)
+  {
+    return RET_FAIL;
+  }
+
+  int   next_time       = vpes->next_timestamp;
+  float predicted_yaw   = yaw_slope * next_time + yaw_intercept;
+  float predicted_pitch = pitch_slope * next_time + pitch_intercept;
+
+  *yaw                  = wrap_angle_360(predicted_yaw);
+  *pitch                = clamp_pitch(predicted_pitch);
+
+  return RET_SUCCESS;
 }

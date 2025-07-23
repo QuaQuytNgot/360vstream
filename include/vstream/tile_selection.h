@@ -11,7 +11,6 @@ struct tile_selection_t
                           float pitch,
                           int  *tile_id,
                           int  *num_tiles);
-  RET (*vpes)(float *, float *, int, int);
 };
 
 /* a function to define vp yaw, pitch; then call defin_viewport() to

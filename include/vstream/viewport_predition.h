@@ -25,7 +25,7 @@ RET   vpes_init(viewport_prediction_t *,
                 int                current_index,
                 int                sample_count,
                 int                next_timestamp,
-                int                history_size;
+                int                history_size,
                 VIEWPORT_ESTIMATOR type);
 
 RET   calculate_linear_regression(float *y_values,
@@ -37,5 +37,9 @@ float wrap_angle_360(float angle);
 float clamp_pitch(float pitch);
 void  adjust_yaw_for_wrapping(float *yaw_values, int n);
 RET vpes_legr(viewport_prediction_t *vpes, float *yaw, float *pitch);
+
+void add_viewport_sample(viewport_prediction_t *vpes,
+                         float                  yaw,
+                         float                  pitch);
 
 #endif

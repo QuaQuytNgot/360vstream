@@ -11,7 +11,6 @@ RET tile_selection_init(tile_selection_t  *tse,
   {
   case VIEWPORT_ESTIMATOR_LEGR:
     tse->select_viewport = define_viewport;
-    tse->vpes            = tile_selection_vpes_legr;
     break;
 
   default:
