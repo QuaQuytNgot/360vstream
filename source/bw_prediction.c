@@ -39,35 +39,17 @@ RET bw_estimator_destroy(bw_estimator_t *self)
   return RET_SUCCESS;
 }
 
-RET bw_estimator_post_harmonic_mean(bw_estimator_t *self,
-                                    bw_t           *dls_arr,
-                                    size_t          dls_arr_count)
+RET bw_estimator_post_harmonic_mean(const bw_t *current_bw_estimate,
+                                    size_t      arr_size,
+                                    bw_t       *result)
 {
-  int   count  = 0;
-  float sum    = 0.0f;
-  self->dls_es = BW_DEFAULT;
-
-  if (dls_arr_count == 0)
-  {
-    return RET_FAIL;
-  }
-  for (size_t i = 0; i < dls_arr_count; i++)
-  {
-    if (dls_arr[i] >= 0)
-    {
-      ++count;
-      sum += 1.0F / (float)dls_arr[i];
-    }
-  }
-  self->dls_es = (bw_t)((float)count / sum);
-
-  return RET_SUCCESS;
+  
 }
 
 RET bw_estimator_get_harmonic_mean(bw_estimator_t *self,
                                    bw_t           *dls_es)
 {
-  if (self->dls_es == BW_DEFAULT)
+  if (self->dls_es == 0)
   {
     return RET_FAIL;
   }

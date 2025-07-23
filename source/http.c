@@ -63,7 +63,7 @@ RET http_get_to_buffer(const char  *url,
     curl_easy_setopt(curl, CURLOPT_FTP_SKIP_PASV_IP, 1L);
     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
     curl_easy_setopt(
-        curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
+        curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_3ONLY);
     // curl_easy_setopt(curl, CURLOPT_HTTP_VERSION,
     // (long)CURL_HTTP_VERSION_3ONLY);
     break;

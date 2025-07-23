@@ -7,8 +7,8 @@
 #include <time.h>
 #include <unistd.h>
 
-void sti_download(float buffer);
-void sti_playback(float buffer);
+void sti_download(float *buffer);
+void sti_playback(float *buffer);
 void sti_buffer();
 
 #endif

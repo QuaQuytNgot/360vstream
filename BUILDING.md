@@ -24,7 +24,7 @@ cmake --build build --config Release
 ## Build example
 
 ```sh
-cmake -S . -B build -D BUILD_EXAMPLES=TRUE
+cmake -S . -B build -D BUILD_EXAMPLES=TRUE -D CMAKE_BUILD_TYPE=Debug
 cmake --build build
 ```
 

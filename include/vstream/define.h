@@ -3,11 +3,11 @@
 
 #include "define.h"
 #include <stdint.h>
+#include <math.h>
 
 #define BW          long int // bytes/s
 #define BYTE        unsigned int
 #define RET         unsigned int
-#define COUNT       unsigned long long
 #define RET_FAIL    0
 #define RET_SUCCESS 1
 #define BW_DEFAULT  (-1)
@@ -35,7 +35,7 @@ typedef enum
 
 typedef enum
 {
-  VIEWPORT_ESTIMATOR_SPHERICAL_WALK = 1
+  VIEWPORT_ESTIMATOR_LEGR = 1
 } VIEWPORT_ESTIMATOR;
 
 typedef enum
@@ -68,6 +68,8 @@ typedef enum
 
 #define NO_OF_ROWS              6
 #define NO_OF_COLS              4
+
+typedef unsigned long long COUNT;
 
 #define NULL_POINTER            ((void *)0)
 

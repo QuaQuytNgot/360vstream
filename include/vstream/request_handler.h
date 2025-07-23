@@ -21,7 +21,7 @@ struct request_handler_t
 
   RET (*post)(request_handler_t *, COUNT, int *, int, int *);
   RET (*reset)(request_handler_t *);
-  RET (*get_dl_speed)(request_handler_t *, bw_t *);
+  RET (*get_dl_speed)(request_handler_t *, bw_t **);
 };
 
 RET request_handler_post(request_handler_t *self,
@@ -35,5 +35,5 @@ RET request_handler_init(request_handler_t *self,
                          const char        *ser_adrr,
                          COUNT              seg_count,
                          COUNT              version_count);
-RET request_handler_get_dls(request_handler_t *, bw_t *);
+RET request_handler_get_dls(request_handler_t *, bw_t **);
 #endif
