@@ -75,8 +75,12 @@ typedef unsigned long long COUNT;
 
 #define NULL_POINTER ((void *)0)
 
-float yaw_trace[]   = {0.0f, 10.0f, 15.0f};
-float pitch_trace[] = {0.0f, 10.0f, 15.0f};
-// define more yaw trace and pitch trace
-int   size_trace    = sizeof(yaw_trace) / sizeof(yaw_trace[0]);
+#ifndef min
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef max
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 #endif

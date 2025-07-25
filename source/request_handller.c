@@ -24,7 +24,44 @@ RET   request_handler_init(request_handler_t *self,
   {
     return RET_FAIL;
   }
-  // self->function pointer
+  for (COUNT i = 0; i < tile_count; i++)
+  {
+    self->curr_seg[i] =
+        malloc(self->version_count * sizeof(buffer_t));
+    if (self->curr_seg[i] == NULL_POINTER)
+    {
+      for (COUNT j = 0; j < i; j++)
+      {
+        free(self->curr_seg[j]);
+      }
+      free(self->curr_seg);
+      return RET_FAIL;
+    }
+    for (COUNT s = 0; s < self->version_count; s++)
+    {
+      buffer_init(&self->curr_seg[i][s]);
+    }
+  }
+
+  self->dls = malloc(tile_count * sizeof(bw_t *));
+  if (self->dls == NULL_POINTER)
+  {
+    return RET_FAIL;
+  }
+
+  for (COUNT i = 0; i < tile_count; i++)
+  {
+    self->dls[i] = malloc(self->seg_count * sizeof(bw_t));
+    if (self->dls[i] == NULL_POINTER)
+    {
+      return RET_FAIL;
+    }
+    for (COUNT j = 0; j < self->seg_count; j++)
+    {
+      self->dls[i][j] = 0;
+    }
+  }
+
   self->post         = request_handler_post;
   self->reset        = request_handler_reset;
   self->get_dl_speed = request_handler_get_dls;
@@ -96,6 +133,8 @@ RET request_handler_post(request_handler_t *self,
     return RET_FAIL;
   }
 
+  char url_buffer[512];
+
   for (int i = 0; i < num_vp_tiles; i++)
   {
     int tile_id = vp_tiles[i];
@@ -108,9 +147,9 @@ RET request_handler_post(request_handler_t *self,
     }
 
     snprintf(
-        self->ser_addr,
-        sizeof(self->ser_addr),
-        "%s/beach_%d/erp_8x6/tile_yuv/tile_%d_%d_480x360_QP%d.bin",
+        url_buffer,
+        sizeof(url_buffer),
+        "%s/beach_%lld/erp_8x6/tile_yuv/tile_%d_%d_480x360_QP%d.bin",
         self->ser_addr,
         chunk_id,
         tile_id / NO_OF_COLS,
@@ -121,13 +160,16 @@ RET request_handler_post(request_handler_t *self,
     // printf("%s\n", url);
 
     RET r = http_get_to_buffer(
-        self->ser_addr,
+        url_buffer,
         STREAM_HTTP_3_0,
         &self->curr_seg[tile_id][version],
         &self->dls[tile_id][chunk_id % self->seg_count]);
 
     if (r == RET_FAIL)
     {
+      printf("Failed to download viewport tile %d, version %d\n",
+             tile_id,
+             version);
       continue;
     }
   }
@@ -149,19 +191,19 @@ RET request_handler_post(request_handler_t *self,
     // Download non-viewport tiles at version 0
     if (!is_viewport_tile)
     {
-      snprintf(
-          self->ser_addr,
-          sizeof(self->ser_addr),
-          "%s/beach_%d/erp_8x6/tile_yuv/tile_%d_%d_480x360_QP38.bin",
-          self->ser_addr,
-          chunk_id,
-          tile_id / NO_OF_COLS,
-          tile_id % NO_OF_COLS);
+      snprintf(url_buffer,
+               sizeof(url_buffer),
+               "%s/beach_%lld/erp_8x6/tile_yuv/"
+               "tile_%d_%d_480x360_QP38.bin",
+               self->ser_addr,
+               chunk_id,
+               tile_id / NO_OF_COLS,
+               tile_id % NO_OF_COLS);
 
-          // printf("%s\n", url);
+      // printf("%s\n", url);
 
       http_get_to_buffer(
-          self->ser_addr,
+          url_buffer,
           STREAM_HTTP_3_0,
           &self->curr_seg[tile_id][0],
           &self->dls[tile_id][chunk_id % self->seg_count]);
@@ -192,7 +234,7 @@ RET request_handler_reset(request_handler_t *self)
 
 RET request_handler_get_dls(request_handler_t *self, bw_t **real_bw)
 {
-  if(self->dls == NULL)
+  if (self->dls == NULL)
   {
     return RET_FAIL;
   }

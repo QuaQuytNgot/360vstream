@@ -5,11 +5,11 @@
 // define viewport mxn
 
 RET tile_selection_init(tile_selection_t  *tse,
-                        VIEWPORT_ESTIMATOR type)
+                        int type)
 {
   switch (type)
   {
-  case VIEWPORT_ESTIMATOR_LEGR:
+  case FIXED_TILE_SELECTION:
     tse->select_viewport = define_viewport;
     break;
 

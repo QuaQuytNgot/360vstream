@@ -35,7 +35,7 @@ RET bw_estimator_init(bw_estimator_t *self, int type)
 RET bw_estimator_destroy(bw_estimator_t *self)
 {
   *self        = (bw_estimator_t){0};
-  self->dls_es = BW_DEFAULT;
+  self->dls_es = 0;
   return RET_SUCCESS;
 }
 

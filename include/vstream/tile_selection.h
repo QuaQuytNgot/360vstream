@@ -9,14 +9,14 @@ struct tile_selection_t
 {
   void (*select_viewport)(float yaw,
                           float pitch,
-                          int  *tile_id,
+                          int  **tile_id,
                           int  *num_tiles);
 };
 
 /* a function to define vp yaw, pitch; then call defin_viewport() to
 define tile in the viewport */
 
-RET   tile_selection_init(tile_selection_t *tile, VIEWPORT_ESTIMATOR type);
+RET   tile_selection_init(tile_selection_t *tile, int type);
 
 // function for vp prediction using linear regression
 // RET   calculate_linear_regression(float *y_values,

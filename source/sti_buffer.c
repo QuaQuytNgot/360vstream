@@ -8,45 +8,30 @@
 
 #define segment_arrive 1
 
-void sti_download(float *buffer)
+void simulate_buffer_increase(float *buffer_level)
 {
-  if (segment_arrive)
+  *buffer_level += SEGMENT_DURATION;
+  if (*buffer_level > MAX_BUFFER_SIZE)
   {
-    if (*buffer < B_MIN)
-    {
-      // download version 0, 1
-      *buffer += SEGMENT_DURATION;
-    }
-    else if (*buffer >= B_MIN && *buffer < B_HIGH)
-    {
-      // downloading enhancement segment 0 1 2 3 4
-      // continue the iteration if 3 segment prediction is 4 1 ..
-      // (1st - 2nd >= 3)
-    }
-    else
-    { // buffer > B_HIGH: downloading enhancement segment 2 3 4
-    }
+    *buffer_level = MAX_BUFFER_SIZE;
   }
+  printf("Buffer increased by %.2fs. Current buffer: %.2fs\n",
+         SEGMENT_DURATION,
+         *buffer_level);
 }
 
-void sti_playback(float *buffer)
+void simulate_buffer_playback(float *buffer_level,
+                              float  playback_time)
 {
-  if (*buffer > 0.0f)
+  if (*buffer_level > 0.0f)
   {
-    *buffer -= STEP;
+    *buffer_level -= playback_time;
+    if (*buffer_level < 0.0f)
+    {
+      *buffer_level = 0.0f;
+    }
   }
-  // only -= STEP bc the sti_download() will guarantee buff will be
-  // not empty as well as over
-}
-
-void sti_buffer()
-{
-  float buffer = 0.0f;
-
-  while (1)
-  {
-    sti_download(&buffer);
-    sti_playback(&buffer);
-    usleep(10000);
-  }
+  printf("Buffer decreased by %.2fs. Current buffer: %.2fs\n",
+         playback_time,
+         *buffer_level);
 }
